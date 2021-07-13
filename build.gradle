@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.5.2'
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+}
+
+sourceCompatibility = 1.15
+targetCompatibility = 1.15
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+ext {
+    springBootVersion = '2.5.2'
+    commonsLang3Version = '3.4'
+    mySQLConnectorVersion = '5.1.44'
+    junitVersion = '4.12'
+    baatCoreVersion = '1.0'
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-dependencies:${project.springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-web:${project.springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${project.springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-validation:${project.springBootVersion}"
+    implementation "org.apache.commons:commons-lang3:${project.commonsLang3Version}"
+    implementation "mysql:mysql-connector-java:${project.mySQLConnectorVersion}"
+    implementation "org.baat:core:${project.baatCoreVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${project.springBootVersion}"
+    testImplementation "junit:junit:${project.junitVersion}"
+}
+
+test {
+    useJUnitPlatform()
+}
