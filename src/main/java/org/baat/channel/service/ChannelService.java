@@ -88,6 +88,13 @@ public class ChannelService {
         return true;
     }
 
+    public List<Channel> getAllChannels() {
+        return channelRepository.findAll().stream()
+                .map(channelEntity -> new Channel(channelEntity.getId(), channelEntity.getName()))
+                .sorted(Comparator.comparing(Channel::getName))
+                .collect(Collectors.toList());
+    }
+
     public List<Channel> getChannelsForUser(@Positive final long userId) {
         final List<ChannelUserEntity> channelUserEntities = channelUserRepository.findByUserId(userId);
         return channelUserEntities.stream()
