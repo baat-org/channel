@@ -6,8 +6,6 @@ spring:
     password: ${DATABASE_PASSWORD}
     initialization-mode: ${DATABASE_INITIALIZATION_MODE}
     connectionProperties: useUnicode=true;characterEncoding=utf-8
-  rabbitmq:
-    host: ${RABBITMQ_HOST}
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
 
