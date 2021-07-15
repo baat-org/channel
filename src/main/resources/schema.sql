@@ -16,6 +16,8 @@
 CREATE TABLE IF NOT EXISTS `channel` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,
+  `description` varchar(500) NOT NULL,
+  `archived` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `c_name_uidx` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -24,5 +26,12 @@ CREATE TABLE IF NOT EXISTS `channel_user` (
   `channel_id` bigint(20) NOT NULL,
   `user_id` bigint(20) NOT NULL,
   UNIQUE KEY `cu_channel_id_user_id_uidx` (`channel_id`, `user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `direct` (
+  `first_user_id` bigint(20) NOT NULL,
+  `second_user_id` bigint(20) NOT NULL,
+  UNIQUE KEY `d_user_ids_uidx` (`first_user_id`, `second_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

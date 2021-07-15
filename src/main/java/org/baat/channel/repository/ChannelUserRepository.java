@@ -9,6 +9,4 @@ public interface ChannelUserRepository extends JpaRepository<ChannelUserEntity, 
     List<ChannelUserEntity> findByUserId(long userId);
 
     List<ChannelUserEntity> findByChannelId(long channelId);
-
-    List<ChannelUserEntity> deleteByChannelId(long channelId);
 }

@@ -2,8 +2,6 @@ package org.baat.channel.controller;
 
 import org.baat.channel.service.ChannelService;
 import org.baat.core.transfer.channel.Channel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +15,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 public class ChannelController {
-    private final static Logger LOGGER = LoggerFactory.getLogger(ChannelController.class);
-
     @Autowired
     ChannelService channelService;
 
@@ -35,15 +31,9 @@ public class ChannelController {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/channels", method = GET)
-    public List<Channel> getAllChannels() {
-        return channelService.getAllChannels();
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/channels/{channelId}", method = DELETE)
-    public boolean deleteChannel(@PathVariable("channelId") @NotNull @Positive final Long channelId) {
-        return channelService.deleteChannel(channelId);
+    @RequestMapping(value = "/channels/{channelId}/archive", method = PUT)
+    public boolean archiveChannel(@PathVariable("channelId") @NotNull @Positive final Long channelId) {
+        return channelService.archiveChannel(channelId);
     }
 
     @CrossOrigin
@@ -56,6 +46,12 @@ public class ChannelController {
     @RequestMapping(value = "/channels/{channelId}/users/{userId}", method = DELETE)
     public boolean removeUserFromChannel(@PathVariable("channelId") @NotNull @Positive final Long channelId, @PathVariable("userId") @NotNull @Positive final Long userId) {
         return channelService.removeUserFromChannel(channelId, userId);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/channels", method = GET)
+    public List<Channel> getAllChannels() {
+        return channelService.getAllChannels();
     }
 
     @CrossOrigin

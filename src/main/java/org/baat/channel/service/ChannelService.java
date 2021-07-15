@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,23 +34,27 @@ public class ChannelService {
         if (channel.getId() != null) {
             throw new IllegalArgumentException("Channel Id can't be passed when creating Channel");
         }
+        if (channel.isArchived()) {
+            throw new IllegalArgumentException("Channel can't be created as archived");
+        }
 
         if (channelRepository.findByName(channel.getName()) != null) {
             throw new IllegalArgumentException("Channel with this name already exists");
         }
 
-        final ChannelEntity savedChannel = channelRepository.save(new ChannelEntity(channel.getName()));
-        return new Channel(savedChannel.getId(), savedChannel.getName());
+        final ChannelEntity savedChannel = channelRepository.save(new ChannelEntity(null, channel.getName(), channel.getDescription(), channel.isArchived()));
+        return new Channel(savedChannel.getId(), savedChannel.getName(), savedChannel.getDescription(), savedChannel.isArchived());
     }
 
-    public boolean deleteChannel(@Positive final long channelId) {
-        if (!channelRepository.existsById(channelId)) {
+    public boolean archiveChannel(@Positive final long channelId) {
+        final Optional<ChannelEntity> foundChannelOptional = channelRepository.findById(channelId);
+        if (foundChannelOptional.isEmpty()) {
             throw new IllegalArgumentException("Channel with passed id don't exist");
         }
 
-        channelUserRepository.deleteByChannelId(channelId);
-        channelRepository.deleteById(channelId);
-
+        final ChannelEntity channelToUpdate = foundChannelOptional.get();
+        channelToUpdate.setArchived(true);
+        channelRepository.save(channelToUpdate);
         return true;
     }
 
@@ -58,18 +63,26 @@ public class ChannelService {
             throw new IllegalArgumentException("Channel Id must be passed when updating Channel");
         }
 
-        if (!channelRepository.existsById(channel.getId())) {
+        final Optional<ChannelEntity> foundChannelOptional = channelRepository.findById(channel.getId());
+        if (foundChannelOptional.isEmpty()) {
             throw new IllegalArgumentException("Channel with passed id don't exist");
         }
 
-        channelRepository.save(new ChannelEntity(channel.getId(), channel.getName()));
+        final ChannelEntity channelToUpdate = foundChannelOptional.get();
+        channelToUpdate.setName(channel.getName());
+        channelToUpdate.setDescription(channel.getDescription());
+        channelRepository.save(channelToUpdate);
 
         return true;
     }
 
     public boolean addUsersToChannel(@Positive final long channelId, @NotEmpty final Set<Long> userIds) {
-        if (!channelRepository.existsById(channelId)) {
+        final Optional<ChannelEntity> foundChannelOptional = channelRepository.findById(channelId);
+        if (foundChannelOptional.isEmpty()) {
             throw new IllegalArgumentException("Channel with passed id don't exist");
+        }
+        if (foundChannelOptional.get().isArchived()) {
+            throw new IllegalArgumentException("Users can't be added to an archived channel");
         }
 
         userIds.stream()
@@ -80,8 +93,12 @@ public class ChannelService {
     }
 
     public boolean removeUserFromChannel(@Positive final long channelId, @Positive final long userId) {
-        if (!channelRepository.existsById(channelId)) {
+        final Optional<ChannelEntity> foundChannelOptional = channelRepository.findById(channelId);
+        if (foundChannelOptional.isEmpty()) {
             throw new IllegalArgumentException("Channel with passed id don't exist");
+        }
+        if (foundChannelOptional.get().isArchived()) {
+            throw new IllegalArgumentException("Users can't be removed from an archived channel");
         }
 
         channelUserRepository.delete(new ChannelUserEntity(channelId, userId));
@@ -90,7 +107,7 @@ public class ChannelService {
 
     public List<Channel> getAllChannels() {
         return channelRepository.findAll().stream()
-                .map(channelEntity -> new Channel(channelEntity.getId(), channelEntity.getName()))
+                .map(channelEntity -> new Channel(channelEntity.getId(), channelEntity.getName(), channelEntity.getDescription(), channelEntity.isArchived()))
                 .sorted(Comparator.comparing(Channel::getName))
                 .collect(Collectors.toList());
     }
@@ -100,7 +117,7 @@ public class ChannelService {
         return channelUserEntities.stream()
                 .filter(channelUserEntity -> channelRepository.existsById(channelUserEntity.getChannelId()))
                 .map(channelUserEntity -> channelRepository.getById(channelUserEntity.getChannelId()))
-                .map(channelEntity -> new Channel(channelEntity.getId(), channelEntity.getName()))
+                .map(channelEntity -> new Channel(channelEntity.getId(), channelEntity.getName(), channelEntity.getDescription(), channelEntity.isArchived()))
                 .sorted(Comparator.comparing(Channel::getName))
                 .collect(Collectors.toList());
     }
