@@ -16,7 +16,7 @@
 CREATE TABLE IF NOT EXISTS `channel` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,
-  `description` varchar(500) NOT NULL,
+  `description` varchar(500),
   `archived` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `c_name_uidx` (`name`)
