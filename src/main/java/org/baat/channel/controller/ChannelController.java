@@ -20,13 +20,13 @@ public class ChannelController {
 
     @CrossOrigin
     @RequestMapping(value = "/channels", method = POST)
-    public Channel createChannel(@RequestBody final Channel channel) {
+    public Channel createChannel(@RequestBody @NotNull final Channel channel) {
         return channelService.createChannel(channel);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/channels", method = PUT)
-    public boolean updateChannel(@RequestBody final Channel channel) {
+    public boolean updateChannel(@RequestBody @NotNull final Channel channel) {
         return channelService.updateChannel(channel);
     }
 
