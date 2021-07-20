@@ -34,7 +34,7 @@ public class ChannelService {
         if (channel.getId() != null) {
             throw new IllegalArgumentException("Channel Id can't be passed when creating Channel");
         }
-        if (channel.isArchived()) {
+        if (channel.getArchived()) {
             throw new IllegalArgumentException("Channel can't be created as archived");
         }
 
@@ -42,7 +42,7 @@ public class ChannelService {
             throw new IllegalArgumentException("Channel with this name already exists");
         }
 
-        final ChannelEntity savedChannel = channelRepository.save(new ChannelEntity(null, channel.getName(), channel.getDescription(), channel.isArchived()));
+        final ChannelEntity savedChannel = channelRepository.save(new ChannelEntity(null, channel.getName(), channel.getDescription(), channel.getArchived()));
         return new Channel(savedChannel.getId(), savedChannel.getName(), savedChannel.getDescription(), savedChannel.isArchived());
     }
 
